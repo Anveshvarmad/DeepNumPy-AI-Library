@@ -353,6 +353,21 @@ class Tensor:
         out._backward = _backward
         return out
 
+    def abs(self):
+        out = Tensor(
+            np.abs(self.data),
+            self.requires_grad,
+            _children=(self,),
+            _op="abs"
+        )
+
+        def _backward():
+            if self.requires_grad:
+                self.grad += np.sign(self.data) * out.grad
+
+        out._backward = _backward
+        return out
+
     def relu(self):
         out = Tensor(
             np.maximum(0, self.data),

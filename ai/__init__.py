@@ -5,3 +5,5 @@ from .core import no_grad
 from .core import is_grad_enabled
 
 from . import nn
+from . import losses
+from . import optim
