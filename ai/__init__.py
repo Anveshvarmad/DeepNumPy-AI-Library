@@ -9,3 +9,4 @@ from . import losses
 from . import optim
 from . import data
 from . import training
+from . import vision
