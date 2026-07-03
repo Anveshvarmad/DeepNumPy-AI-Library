@@ -340,7 +340,25 @@ class Tensor:
         else:
             denom = np.prod([self.data.shape[a] for a in axes])
 
-        return self.sum(axis=axis, keepdims=keepdims) / denom
+        out = Tensor(
+            self.data.mean(axis=axis, keepdims=keepdims),
+            self.requires_grad,
+            _children=(self,),
+            _op="mean"
+        )
+
+        def _backward():
+            if self.requires_grad:
+                grad = out.grad
+
+                if axes is not None and not keepdims:
+                    for ax in sorted(axes):
+                        grad = np.expand_dims(grad, ax)
+
+                self.grad += np.ones_like(self.data) * grad / denom
+
+        out._backward = _backward
+        return out
 
     def max(self, axis=None, keepdims=False):
         values = self.data.max(axis=axis, keepdims=keepdims)
