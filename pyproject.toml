@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deepnumpy-ai-library"
+version = "0.1.0"
+description = "A PyTorch-like deep learning library built from scratch using NumPy"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "graphviz"
+]
+
+[tool.setuptools]
+packages = [
+    "ai",
+    "ai.core",
+    "ai.nn",
+    "ai.losses",
+    "ai.optim",
+    "ai.data",
+    "ai.vision",
+    "ai.sequence",
+    "ai.transformer",
+    "ai.utils"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
