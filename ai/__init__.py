@@ -7,3 +7,5 @@ from .core import is_grad_enabled
 from . import nn
 from . import losses
 from . import optim
+from . import data
+from . import training
