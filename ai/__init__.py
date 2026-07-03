@@ -12,3 +12,4 @@ from . import data
 from . import training
 from . import vision
 from . import sequence
+from . import transformer

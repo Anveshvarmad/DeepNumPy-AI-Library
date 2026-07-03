@@ -267,6 +267,31 @@ class Tensor:
         out._backward = _backward
         return out
 
+    def permute(self, *axes):
+        if len(axes) == 1 and isinstance(axes[0], (tuple, list)):
+            axes = tuple(axes[0])
+
+        out = Tensor(
+            np.transpose(self.data, axes),
+            self.requires_grad,
+            _children=(self,),
+            _op="permute"
+        )
+
+        inverse_axes = np.argsort(axes)
+
+        def _backward():
+            if self.requires_grad:
+                self.grad += np.transpose(out.grad, inverse_axes)
+
+        out._backward = _backward
+        return out
+
+    def transpose(self, axis1=-1, axis2=-2):
+        axes = list(range(self.data.ndim))
+        axes[axis1], axes[axis2] = axes[axis2], axes[axis1]
+        return self.permute(*axes)
+
     def reshape(self, *shape):
         out = Tensor(
             self.data.reshape(*shape),

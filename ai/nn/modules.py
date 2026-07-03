@@ -11,8 +11,8 @@ class Module:
     def forward(self, *inputs):
         raise NotImplementedError
 
-    def __call__(self, *inputs):
-        return self.forward(*inputs)
+    def __call__(self, *inputs, **kwargs):
+        return self.forward(*inputs, **kwargs)
 
     def parameters(self):
         params = []
