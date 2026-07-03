@@ -59,6 +59,28 @@ def _normalize_axis(axis, ndim):
     return tuple(a if a >= 0 else ndim + a for a in axis)
 
 
+def stack(tensors, axis=0):
+    tensors = [_ensure_tensor(tensor) for tensor in tensors]
+
+    data = np.stack([tensor.data for tensor in tensors], axis=axis)
+    requires_grad = any(tensor.requires_grad for tensor in tensors)
+
+    out = Tensor(
+        data,
+        requires_grad=requires_grad,
+        _children=tuple(tensors),
+        _op="stack"
+    )
+
+    def _backward():
+        for index, tensor in enumerate(tensors):
+            if tensor.requires_grad:
+                tensor.grad += np.take(out.grad, index, axis=axis)
+
+    out._backward = _backward
+    return out
+
+
 class Tensor:
     __array_priority__ = 100
 
@@ -432,7 +454,12 @@ class Tensor:
 
         def _backward():
             if self.requires_grad:
-                np.add.at(self.grad, index, out.grad)
+                try:
+                    np.add.at(self.grad, index, out.grad)
+                except Exception:
+                    grad_holder = np.zeros_like(self.data)
+                    grad_holder[index] += out.grad
+                    self.grad += grad_holder
 
         out._backward = _backward
         return out
